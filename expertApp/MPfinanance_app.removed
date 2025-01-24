@@ -1,0 +1,152 @@
+import azure.functions as func
+import logging
+import os
+from groq import Groq
+from typing import Dict, List
+
+import uuid
+import os
+from datetime import datetime
+import traceback
+import logging
+from flask import (Flask, render_template,  request, redirect,session,jsonify,send_from_directory,)
+from dotenv import load_dotenv
+from langfuse.callback import CallbackHandler
+from qdrant_client import QdrantClient
+from langchain_qdrant import QdrantVectorStore, Qdrant
+from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_community.document_loaders import PyPDFDirectoryLoader
+from langchain_community.document_loaders import UnstructuredWordDocumentLoader
+
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+from langchain_openai import ChatOpenAI
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
+
+from utils.mongo_utils import insert_data, get_conversation_history
+
+
+
+# Get a free API key from https://console.groq.com/keys
+GROQ_API_TOKEN = "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"
+os.environ["GROQ_API_KEY"] = GROQ_API_TOKEN
+
+LLAMA3_70B_INSTRUCT = "llama3-70b-8192"
+LLAMA3_8B_INSTRUCT = "llama3-8b-8192"
+
+DEFAULT_MODEL = LLAMA3_70B_INSTRUCT
+
+
+client = Groq()
+
+@app.route("/answer_in_specific", methods=["POST"])
+def answerInSpecific():
+    """
+    API for advance retrival information chat
+    """
+    # https://python.langchain.com/v0.1/docs/use_cases/question_answering/chat_history/#returning-sources
+    try:
+        # Retrieve data from the request
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON"}), 400
+
+        user_input = data.get("message")
+        session_id = data.get("session_id")
+        collection = data.get("collection")
+        
+
+        if not user_input or not session_id:
+            return jsonify({"error": "Missing message or session ID"}), 400
+        print("Embeddings initializing started")
+        embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-base")
+        print("Embeddings initializing Completed")
+
+        qdrant_client = QdrantClient(url=QDRANT_URL, prefer_grpc=False)
+        if qdrant_client.collection_exists(collection_name=collection):
+            print(f"The selected qdrtant {collection} exists")
+            retriever = Qdrant(
+                client=qdrant_client,
+                collection_name=collection,
+                embeddings=embeddings,
+            ).as_retriever()
+            contextualize_q_system_prompt = """Given a chat history and the latest user question \
+            which might reference context in the chat history, formulate a standalone question \
+            which can be understood without the chat history. Do NOT answer the question, \
+            just reformulate it if needed and otherwise return it as is."""
+            contextualize_q_prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", contextualize_q_system_prompt),
+                    MessagesPlaceholder("chat_history"),
+                    ("human", "{input}"),
+                ]
+            )
+            history_aware_retriever = create_history_aware_retriever(
+                llm, retriever, contextualize_q_prompt
+            )
+            qa_system_prompt = """You are an assistant for question-answering tasks. \
+                Use the following pieces of retrieved context to answer the question. \
+                If you don't know the answer, just say that you don't know. \
+                Use three sentences maximum and keep the answer concise.\
+
+                {context}"""
+            qa_prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", qa_system_prompt),
+                    MessagesPlaceholder("chat_history"),
+                    ("human", "{input}"),
+                ]
+            )
+            question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
+
+            rag_chain = create_retrieval_chain(
+                history_aware_retriever, question_answer_chain
+            )
+
+            conversational_rag_chain = RunnableWithMessageHistory(
+                rag_chain,
+                get_session_history,
+                input_messages_key="input",
+                history_messages_key="chat_history",
+                output_messages_key="answer",
+            )
+            print("chain initialzation started")
+            result = conversational_rag_chain.invoke(
+                {"input": user_input},
+                config={
+                    "configurable": {"session_id": session_id},
+                    "callbacks": [langfuse_handler],
+                },
+            )
+            insert_data(
+                data={
+                    "session_id": session_id,
+                    "user_message": user_input,
+                    "ai_response": result["answer"],
+                },
+                collection=mongo_db[MONGO_HISTORY_COLLECTION],
+            )
+            print("Result", result)
+            references = []
+            context = result["context"]
+            for i in context:
+                references.append(i.metadata["filename"].split(".")[0])
+            return jsonify(
+                {"content": result["answer"], "references": list(set(references))}
+            )
+        else:
+            return jsonify({"content": "The selected collection does not exist"})
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        print("ERROR", traceback.format_exc())
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+complete_and_print("Who is India' godfather ?")
