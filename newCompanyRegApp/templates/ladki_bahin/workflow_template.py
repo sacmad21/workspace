@@ -76,6 +76,7 @@ workflow = {
             "confirmation":True
         }
     }
+
 workflow_steps = ["welcome","eligibility_check", "basic_details", "bank_details", "educational_details", "family_income", "document_upload", "declaration"]
 
 mandatory_documents = ["Aadhaar Card", "Class 10 Certificate", "BPL Card", "Bank Passbook/Cancelled Cheque", "Residential Proof"]        
