@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>मुख्यमंत्री-माझी लाडकी बहीण योजना अर्ज</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .field {
+            font-weight: bold;
+        }
+        .photo-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .photo-container img {
+            width: 100px;
+            height: 120px;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>मुख्यमंत्री-माझी लाडकी बहीण योजना अर्ज</h1>
+    
+    <div class="photo-container">
+        <div>
+            <p class="field">मुख्यमंत्री:</p>
+            <img src="https://example.com/cm_photo.jpg" alt="मुख्यमंत्री">
+        </div>
+        <div>
+            <p class="field">पंतप्रधान:</p>
+            <img src="https://example.com/pm_photo.jpg" alt="पंतप्रधान">
+        </div>
+        <div>
+            <p class="field">स्थानीक आमदार:</p>
+            <img src="https://example.com/mla_photo.jpg" alt="स्थानीक आमदार">
+        </div>
+    </div>
+    
+    <div class="photo-container">
+        <div>
+            <p class="field">अर्जदाराचा फोटो:</p>
+            <img src="{{ form_data.applicant_photo }}" alt="अर्जदाराचा फोटो">
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>व्यक्तिगत माहिती</h2>
+        <p class="field">महिलेचे संपूर्ण नाव:</p>
+        <p>{{ form_data.name }}</p>
+
+        <p class="field">महिलेचे लग्नापूर्वीचे नाव:</p>
+        <p>{{ form_data.pre_marriage_name }}</p>
+
+        <p class="field">महिलेचे लग्नानंतरचे नाव (हव असल्यास):</p>
+        <p>{{ form_data.post_marriage_name }}</p>
+
+        <p class="field">पालकाचे नाव:</p>
+        <p>{{ form_data.guardian_name }}</p>
+
+        <p class="field">लिंग:</p>
+        <p>{{ form_data.gender }}</p>
+    </div>
+
+    <div class="section">
+        <h2>ओळख माहिती</h2>
+        <p class="field">जन्म दिनांक:</p>
+        <p>{{ form_data.date_of_birth }}</p>
+
+        <p class="field">आधार क्रमांक:</p>
+        <p>{{ form_data.aadhaar_number }}</p>
+
+        <p class="field">मोबाईल क्रमांक:</p>
+        <p>{{ form_data.mobile_number }}</p>
+    </div>
+
+    <div class="section">
+        <h2>पत्ता</h2>
+        <p class="field">संपूर्ण पत्ता:</p>
+        <p>{{ form_data.address }}</p>
+        <p class="field">ग्रामपंचायत / नगरपंचायत / महानगरपालिका:</p>
+        <p>{{ form_data.municipality }}</p>
+        <p class="field">तालुका:</p>
+        <p>{{ form_data.taluka }}</p>
+        <p class="field">जिल्हा:</p>
+        <p>{{ form_data.district }}</p>
+        <p class="field">पिनकोड:</p>
+        <p>{{ form_data.pincode }}</p>
+    </div>
+
+    <div class="section">
+        <h2>शैक्षणिक माहिती</h2>
+        <p class="field">शिक्षण स्तर:</p>
+        <p>{{ form_data.education_level }}</p>
+
+        <p class="field">शाळेचे / महाविद्यालयाचे नाव:</p>
+        <p>{{ form_data.school_college_name }}</p>
+    </div>
+
+    <div class="section">
+        <h2>आर्थिक माहिती</h2>
+        <p class="field">वार्षिक कुटुंब उत्पन्न:</p>
+        <p>{{ form_data.family_income }}</p>
+
+        <p class="field">उत्पन्नाचा स्रोत:</p>
+        <p>{{ form_data.income_source }}</p>
+    </div>
+
+    <div class="section">
+        <h2>बँक तपशील</h2>
+        <p class="field">बँकेचे पूर्ण नाव:</p>
+        <p>{{ form_data.bank_name }}</p>
+        <p class="field">बँक खाते धारकाचे नाव:</p>
+        <p>{{ form_data.account_holder_name }}</p>
+        <p class="field">बँक खाते क्रमांक:</p>
+        <p>{{ form_data.account_number }}</p>
+        <p class="field">IFSC कोड:</p>
+        <p>{{ form_data.ifsc_code }}</p>
+    </div>
+
+    <div class="section">
+        <h2>इतर माहिती</h2>
+        <p class="field">योजनेसाठी पात्रता:</p>
+        <p>{{ form_data.eligibility }}</p>
+
+        <p class="field">कोणतेही अतिरिक्त दस्तऐवज संलग्न आहेत का?</p>
+        <p>{{ form_data.additional_documents }}</p>
+    </div>
+
+    <div class="section">
+        <h2>अर्जदाराची स्वाक्षरी</h2>
+        <p>मी वरील सर्व माहिती खरी आहे याची मी खात्री देतो.</p>
+        <p>स्वाक्षरी: ________________________</p>
+    </div>
+</body>
+</html>
