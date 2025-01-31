@@ -6,8 +6,7 @@ from azure.functions import HttpRequest, HttpResponse
 import azure.functions as func
 from newCompanyRegApp.main import get_webhook, post_webhook 
 
-
-app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+app = func.FunctionApp( http_auth_level=func.AuthLevel.ANONYMOUS )
 @app.route(route="webhook")
 def webhook(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":

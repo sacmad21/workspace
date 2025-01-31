@@ -37,6 +37,7 @@ def simulate_whatsapp_bot(user_message):
         # Send the payload to the WhatsApp bot
         response = requests.post(WHATSAPP_BOT_URL, json=payload)
 
+
         print("\nBOT RESPONSE::\n", response.json())
         # Check the response status
         if response.status_code == 200:
@@ -49,6 +50,7 @@ def simulate_whatsapp_bot(user_message):
                 return f"Bot Error: {response_data.get('message', 'Error in processing')}"
         else:
             return f"HTTP Error: {response.status_code} - {response.reason}"
+
 
     except Exception as e:
         return f"Exception: {str(e)}"
