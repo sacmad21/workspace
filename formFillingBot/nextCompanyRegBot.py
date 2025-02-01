@@ -3,36 +3,19 @@ from pymongo import MongoClient
 import requests
 import azure.functions as func
 import json
-from openai import OpenAI 
 import openai
-import traceback 
-
-#WHATSAPP_TOKEN="EAARfYvT6wOgBO9qvOuzjTn5khoM2XZBfmQUqRvnMa2W1bXtDBZC8Tz03xTB1MQZABAhGZAllMx4xyIO2McBwu0nVRYQcECLDAHBDjNf2cSAaCTLthKSe2QiRGiCpqaBZBX1X50z660kHXlntsEwN8YJetR2ofGBnpdT7wX6l4OZC6EJmfFjoWsiXgEjbDBZC0xmxyTGpfJzbNlN7pMdCZBeepNMd5ZA4JczAYqwBphZCOQ"
-
-#WHATSAPP_TOKEN="Bearer EAARfYvT6wOgBOZBU7KmaAGZCaHbsaYvYwmkRNNBJaz6VzFxF2zqZBSWfDhFfgokXdJGdkZA2NV7977RvfCW1lqp57jvAu8yxiNMznej4ot53w2H9n0KxQAZAUKzpNWP2sN9Opd7ZBztVRwe4jVoxCw1kiKNu8a3c9jsrDzqAualtctLnwAPAv3Gvedy4xZA7HUEySYRwATD6pwCpkPy2ezNBUZCkNWDp"
-WHATSAPP_TOKEN="Bearer EAARfYvT6wOgBO9qvOuzjTn5khoM2XZBfmQUqRvnMa2W1bXtDBZC8Tz03xTB1MQZABAhGZAllMx4xyIO2McBwu0nVRYQcECLDAHBDjNf2cSAaCTLthKSe2QiRGiCpqaBZBX1X50z660kHXlntsEwN8YJetR2ofGBnpdT7wX6l4OZC6EJmfFjoWsiXgEjbDBZC0xmxyTGpfJzbNlN7pMdCZBeepNMd5ZA4JczAYqwBphZCOQ"
-
-WHATSAPP_API_BASE_URL="https://graph.facebook.com/v15.0"
-WHATSAPP_CLOUD_API_PHONE_NUMBER_ID="441143062411889"
-GRAPH_API_TOKEN = "EAARfYvT6wOgBO9qvOuzjTn5khoM2XZBfmQUqRvnMa2W1bXtDBZC8Tz03xTB1MQZABAhGZAllMx4xyIO2McBwu0nVRYQcECLDAHBDjNf2cSAaCTLthKSe2QiRGiCpqaBZBX1X50z660kHXlntsEwN8YJetR2ofGBnpdT7wX6l4OZC6EJmfFjoWsiXgEjbDBZC0xmxyTGpfJzbNlN7pMdCZBeepNMd5ZA4JczAYqwBphZCOQ"
-WEBHOOK_VERIFY_TOKEN = "BINGO"
-
-
-# mongodb://allbotdb:HJKQTAmnWGVoK8cAzwAto4zow3hXS02pDN3v37iOjhLHmGCdNAo86GEKOETpwD6IR4rqoVTU99mhACDbqHeJfg==@allbotdb.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&maxIdleTimeMS=120000&appName=@allbotdb@
+import re
 
 # MongoDB Configuration
-mongo_client = MongoClient("mongodb://allbotdb:HJKQTAmnWGVoK8cAzwAto4zow3hXS02pDN3v37iOjhLHmGCdNAo86GEKOETpwD6IR4rqoVTU99mhACDbqHeJfg==@allbotdb.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&maxIdleTimeMS=120000&appName=@allbotdb@")
-db = mongo_client["govforms"]
+mongo_client = MongoClient("mongodb://<MONGO_DB_CONNECTION_STRING>")
+db = mongo_client["ladki_bahin_yojna"]
 users_collection = db["user_sessions"]
-
 
 # In-Memory Session Storage
 sessions = {}
-user_responses = [] 
 
 # OpenAI API Key
-openai_api_key = "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"
-
+openai.api_key = "YOUR_OPENAI_API_KEY"
 
 ### Workflow Steps ###
 workflow_steps = [
@@ -56,20 +39,16 @@ prompts = {
     "declaration": "Please confirm the following declaration:\n'I hereby declare that all the information provided is true to the best of my knowledge, and I understand that any false information may lead to the rejection of my application.'\nType 'YES' to agree and complete the process."
 }
 
+
 ### Helper Functions ###
 def get_user_session(user_id):
     """Fetch the user session."""
-    print("Get use Session ::", user_id)
-
     if user_id not in sessions:
         sessions[user_id] = {"current_step": "eligibility_check", "data": {}, "documents": {}, "retry_count": 0}
     return sessions[user_id]
 
 def save_user_data(user_id, key, value):
     """Save user data into MongoDB."""
-
-    print("Save user data ::", user_id, key, value)
-
     user_data = users_collection.find_one({"user_id": user_id})
     if not user_data:
         users_collection.insert_one({"user_id": user_id, "data": {key: value}, "documents": {}})
@@ -79,9 +58,6 @@ def save_user_data(user_id, key, value):
 
 def save_document(user_id, doc_name, doc_url):
     """Save document upload details."""
-
-    print("Save document ::", user_id, doc_name, doc_url)
-
     user_data = users_collection.find_one({"user_id": user_id})
     if not user_data:
         users_collection.insert_one({"user_id": user_id, "data": {}, "documents": {doc_name: doc_url}})
@@ -92,9 +68,6 @@ def save_document(user_id, doc_name, doc_url):
 
 def move_to_next_step(session):
     """Advance the workflow step."""
-
-    print("Move to next step ::", session["current_step"])
-
     current_step = session["current_step"]
     next_step_index = workflow_steps.index(current_step) + 1
     if next_step_index < len(workflow_steps):
@@ -102,18 +75,8 @@ def move_to_next_step(session):
     else:
         session["current_step"] = "completed"
 
-def list_missing_documents(user_id):
-    """Check and return missing documents."""
-    user_data = users_collection.find_one({"user_id": user_id})
-    uploaded_documents = user_data.get("documents", {})
-    missing_mandatory = [doc for doc in mandatory_documents if doc not in uploaded_documents]
-    return missing_mandatory
-
-
 def validate_step_data(current_step, user_input):
     """Validate the data provided by the user for the current step."""
-
-
     validation_rules = {
         "eligibility_check": {
             "questions": 5,
@@ -170,110 +133,34 @@ def validate_step_data(current_step, user_input):
         }
     return True, "Valid input."
 
+def list_missing_documents(user_id):
+    """Check and return missing documents."""
+    user_data = users_collection.find_one({"user_id": user_id})
+    uploaded_documents = user_data.get("documents", {})
+    missing_mandatory = [doc for doc in mandatory_documents if doc not in uploaded_documents]
+    return missing_mandatory
 
-
-
-def generate_response(form_section, user_input):
+def generate_response(prompt, user_input):
     """Generate a response using OpenAI."""
-
-    print("Generate Response ::", form_section, user_input)
-
-    name = "Sachin Khaire"
-
-    final_promt = f"""
-        Ask questions to User one by one from FORM_SECTION_PROMT. 
-        Kindly improvise the questions if required to be more suitable based on the his/her responses.
-        Don't repeat the question if answer is already available in user responses. 
-        Once all the answers for all the questions are available in USER_RESPONSES then confirm all the answers with user.
-        After user's confirmation generate JSON for all the available answers.
-
-        FORM_SECTION_PROMT :::
-        {form_section}
-
-        NAME :::
-        {name}
-
-        CURRENT_RESPONSE :::
-        {user_input}
-        
-        USER_RESPONSE :::
-        {user_responses}
-
-        """
-    messages = []
-
-
-
-    choices = None
     try:
-        client = OpenAI(api_key=openai_api_key)
-        print("\n\nFinal Prompt ::::\n", final_promt)
-
-        response: any = client.chat.completions.create(
-            model="gpt-3.5-turbo-instruct",
-            prompt=final_promt,
-            max_tokens=1024
-        )
-        
-        print ("Extraction response" , response)
-
-        choices: any = response.choices[0]
-        text = choices.text
-
-        user_responses.append(user_input)
-
-        is_step_complete = False
-        extracted_fields = "NA"
-        next_prompt = text.strip()
-
-        print("Before Return : ", is_step_complete, extracted_fields, next_prompt )
-
-        return is_step_complete,next_prompt,extracted_fields
-    
-    except Exception as e:
-        traceback.print_exc() 
-        logging.error(f"Error generating response: generate_response {e}")
-        return "I'm sorry, I couldn't process your response. Please try again."
-
-
-def extract_fields_with_openai(fields, user_input):
-    """Use OpenAI to extract fields from user input."""
-    client = OpenAI(api_key=openai_api_key)
-
-    choices = None
-    try:
-        response: any = client.completions.create(
-            model="gpt-3.5-turbo-instruct",
-            prompt=f"Extract the following fields from the user input in JSON format:\n Fields::\n {fields}\nUser Input::\n {user_input}\nExtracted Fields:",
-            
-            
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=f"{prompt}\nUser Input: {user_input}\nResponse:",
             max_tokens=150
         )
-        print ("Extraction response" , response)
-        choices: any = response.choices[0]
-        fields = json.loads(choices.text.strip())
-        return fields
+        return response.choices[0].text.strip()
     except Exception as e:
-        traceback.print_exc() 
-
-        logging.error(f"Error extracting fields with OpenAI: {e}")
-        return {}
-
-
-
-
+        logging.error(f"Error generating response: {e}")
+        return "I'm sorry, I couldn't process your response. Please try again."
 
 def send_message_via_whatsapp(recipient_id, message):
     """Send a message using WhatsApp Business API."""
-
-    print("send_message_via_whatsapp ::", recipient_id, message)
-
-    url = "https://graph.facebook.com/v15.0/441143062411889/messages"
+    url = "https://graph.facebook.com/v15.0/your-whatsapp-business-id/messages"
     headers = {
-        "Authorization": WHATSAPP_TOKEN,
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
         "Content-Type": "application/json",
     }
-    payload = {                                                                                                                                                                                                                                                                                                                                                                     
+    payload = {
         "messaging_product": "whatsapp",
         "to": recipient_id,
         "type": "text",
@@ -284,12 +171,7 @@ def send_message_via_whatsapp(recipient_id, message):
         logging.error(f"Failed to send message: {response.json()}")
     return response.json()
 
-
-
-
-
-
-def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     """Handle incoming WhatsApp messages."""
     logging.info('Python HTTP trigger function processed a request.')
 
@@ -315,21 +197,10 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
             send_message_via_whatsapp(user_id, f"Received your document: {document_name}.")
             return func.HttpResponse(body=json.dumps({"status": "document_received"}), mimetype="application/json")
 
-
         # Handle text messages
         user_input = message["text"]["body"]
         prompt = prompts.get(current_step, "Thank you! Workflow is completed.")
-
-        is_section_complete, next_prompt, extracted_fields = generate_response(prompt, user_input)
-        print("\nGenerate Response\nFIN==", is_section_complete, "\nNP==" ,next_prompt, "\nFLD==" , extracted_fields )
-
-        if is_section_complete == False:
-            send_message_via_whatsapp(user_id, next_prompt)
-            return func.HttpResponse(body=json.dumps({"status": "success", "message":next_prompt}), mimetype="application/json")
-
-
-        is_valid, validation_result = validate_step_data(current_step, extracted_fields)
-        
+        is_valid, validation_result = validate_step_data(current_step, user_input)
 
         if not is_valid:
             missing = validation_result.get("missing_fields", [])
@@ -364,20 +235,3 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         logging.error(f"Error processing request: {e}")
         return func.HttpResponse(body=json.dumps({"status": "error", "message": str(e)}), mimetype="application/json", status_code=500)
-
-
-
-
-
-
-# Function for handling GET requests (webhook verification)
-def get_webhook(req: func.HttpRequest) -> func.HttpResponse:
-    mode = req.params.get("hub.mode")
-    token = req.params.get("hub.verify_token")
-    challenge = req.params.get("hub.challenge")
-
-    if mode == "subscribe" and token == WEBHOOK_VERIFY_TOKEN:
-        logging.info("Webhook verified successfully!")
-        return func.HttpResponse(challenge, status_code=200)
-    else:
-        return func.HttpResponse("Forbidden", status_code=403)

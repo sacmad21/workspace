@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head> 
+
+    <title>Griha Aadhar Scheme Application</title>
+    <style>
+        body 
+        { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { width: 80%; margin: auto; padding: 20px; border: 1px solid #000; }
+        h2 { text-align: center; }
+        .section { margin-bottom: 20px; }
+        .label { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Griha Aadhar Scheme Application Form</h2>
+        
+        <div class="section">
+            <p class="label">Full Name: {{ form_data.fullName }}</p>
+            <p class="label">Husband's Name: {{ form_data.husbandName }}</p>
+            <p class="label">Date of Birth: {{ form_data.DOB }}</p>
+            <p class="label">Aadhaar Number: {{ form_data.aadharNumber }}</p>
+            <p class="label">Mobile Number: {{ form_data.mobileNumber }}</p>
+            <p class="label">Residential Address: {{ form_data.address }}</p>
+        </div>
+
+        <div class="section">
+            <h3>Bank Details</h3>
+            <p class="label">Account Holder's Name: {{ form_data.accountHolderName }}</p>
+            <p class="label">Bank Name: {{ form_data.bankName }}</p>
+            <p class="label">Branch Name: {{ form_data.branchName }}</p>
+            <p class="label">Account Number: {{ form_data.accountNumber }}</p>
+            <p class="label">IFSC Code: {{ form_data.ifscCode }}</p>
+        </div>
+
+        <div class="section">
+            <h3>Family Income Details</h3>
+            <p class="label">Total Annual Family Income: {{ form_data.annualFamilyIncome }}</p>
+            <p class="label">Occupation/Source of Income: {{ form_data.sourceOfIncome }}</p>
+        </div>
+
+        <div class="section">
+            <h3>Documents Uploaded</h3>
+            <p>Aadhaar Card: {{ '✔' if form_data.isAadharUploaded else '✘' }}</p>
+            <p>Marriage Certificate: {{ '✔' if form_data.isMarriageCertificateUploaded else '✘' }}</p>
+            <p>Bank Passbook Copy: {{ '✔' if form_data.isBankPassbookUploaded else '✘' }}</p>
+            <p>Income Certificate: {{ '✔' if form_data.isIncomeCertificateUploaded else '✘' }}</p>
+            <p>Residential Proof: {{ '✔' if form_data.isResidentialProofUploaded else '✘' }}</p>
+        </div>
+
+        <div class="section">
+            <h2>Declaration</h2>
+            <p>{{ form_data.formDeclaration }}</p>
+            <p><strong>Signature: ___________________</strong></p>
+        </div>
+    </div>
+</body>
+</html>

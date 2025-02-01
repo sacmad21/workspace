@@ -4,9 +4,9 @@ import json
 from openai import OpenAI
 import traceback
 
-from newCompanyRegApp.validation import validate_field, validate_step, validate_final_form
+from formFillingBot.validation import validate_field, validate_step, validate_final_form
 
-from newCompanyRegApp.util import *
+from formFillingBot.util import *
 
 def extract_fields_with_openai(prompt, user_input, session, step_fields):
     """Use OpenAI to extract fields, generate the next prompt, handle language confirmation, and determine step completion."""
@@ -191,8 +191,11 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
             print("\n ================================================================= Open AI Call  ", user_input)
             extracted_fields, step_complete, next_prompt, user_final_confirmation = extract_fields_with_openai(step_prompt, user_input, session, step_fields)
 
-            print ("After Generating Response :: " , extracted_fields, step_complete, next_prompt)
-            
+            print (f"\n\n\nAfter Generating Response ::  fields:{extracted_fields}, StepComplete:{step_complete}, NextPrompt:{next_prompt}")
+
+            # Send next step prompt
+            wa_message = next_prompt 
+
 
             if extracted_fields :
             # Validate individual fields
@@ -210,22 +213,57 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
 
 
 
+
+    # Step is = Complete, Valid, confirmed
+
+            state = "pending"
+
+            if step_complete:
+                state = "complete"
+                step_valid = validate_step(session.get("data", {}), current_step)
+                if step_valid == True:
+                    state = "valid"
+                    if doStepConfirmationRequired(session) :
+                        
+                        if(user_final_confirmation):
+                            state = "confirmed"
+                        else:
+                            state = "valid"  
+
+                    else :
+                        state = "confirmed"
+
+                else :
+                    state = "invalid"  
+
+            else:
+                state = "pending"
+
+            print(f"\n\n STEP COMPLETION STATUS ::: {state}\n\n")
+
+
+
+
         # Validate the step
             if step_complete:
                 print("\nCurrent step is complete ::::", current_step)
                 step_valid = validate_step(session.get("data", {}), current_step)
+                
                 if not step_valid:
+                    # Step is complete but it's not valid
                     wa_message = "The information provided for this step is incomplete or invalid. Please review and correct it."
                     print("\nStep complete-",wa_message)
                     send_message_via_whatsapp(user_id, wa_message)
                     return func.HttpResponse(body=json.dumps({"status": "success", "message":wa_message}), mimetype="application/json")
-                
+                                
                 elif user_final_confirmation or  (not doStepConfirmationRequired(session)):
                     
+                    print("\nStep is Valid :: ")
                     move_to_next_step(session)                    
 
                     # This if block should proceed when any stage is left for completion.
                     if not session.get("current_step") == "completed":
+                        # step is complete, valid, confirmed (also not the final step)       
                         wa_message = f"Thank your for your confirmation, we will proceed to Next Step."
                         print("\nStep complete-",wa_message)
                         send_message_via_whatsapp(user_id, wa_message)
@@ -258,8 +296,7 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
 
 
 
-            # Send next step prompt
-            wa_message = next_prompt or prompts.get(session["current_step"], "Thank you! Workflow is completed.")
+            
             print(wa_message)
             session["wa_message"] =  wa_message       
 

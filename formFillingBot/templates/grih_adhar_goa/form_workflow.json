@@ -1,0 +1,52 @@
+{
+    "welcome": {
+        "prompt": "Welcome! Are you interested in applying for the Griha Aadhar Scheme in Goa? (Yes/No)",
+        "questions": 1,
+        "fields": ["isInterested"],
+        "valid_responses": ["Yes", "No"],
+        "confirmation": true
+    },
+    "eligibility_check": {
+        "prompt": "Let's check your eligibility:\n1. Are you a resident of Goa? (Yes/No)\n2. Are you a married woman living in Goa? (Yes/No)\n3. Is your total family income below ₹3,00,000 per annum? (Yes/No)\n4. Do you or your spouse already receive financial assistance from a similar scheme? (Yes/No)",
+        "questions": 4,
+        "fields": ["isResident_of_Goa", "isMarriedWomanInGoa", "isIncomeBelow3L", "isAlreadyReceivingAssistance"],
+        "valid_responses": ["Yes", "No"],
+        "confirmation": true
+    },
+    "basic_details": {
+        "prompt": "Please provide your personal details:\n1. Full Name?\n2. Husband's Name?\n3. Date of Birth (DD-MM-YYYY)?\n4. Aadhaar Number?\n5. Mobile Number?\n6. Residential Address?",
+        "fields": ["fullName", "husbandName", "DOB", "aadharNumber", "mobileNumber", "address"],
+        "patterns": {
+            "DOB": "^\\d{2}-\\d{2}-\\d{4}$",
+            "aadharNumber": "^\\d{12}$",
+            "mobileNumber": "^\\d{10}$"
+        },
+        "confirmation": true
+    },
+    "bank_details": {
+        "prompt": "Please provide your bank account details:\n1. Account Holder's Name?\n2. Bank Name?\n3. Branch Name?\n4. Account Number?\n5. IFSC Code?",
+        "fields": ["accountHolderName", "bankName", "branchName", "accountNumber", "ifscCode"],
+        "patterns": {
+            "ifscCode": "^[A-Z]{4}0[A-Z0-9]{6}$"
+        },
+        "confirmation": true
+    },
+    "family_income": {
+        "prompt": "Please provide your family's income details:\n1. What is your Total Annual Family Income (in INR)?\n2. What is your Occupation/Source of Income?",
+        "fields": ["annualFamilyIncome", "sourceOfIncome"],
+        "patterns": {
+            "annualFamilyIncome": "^\\d+(\\.\\d{1,2})?$"
+        },
+        "confirmation": true
+    },
+    "document_upload": {
+        "prompt": "Upload the following mandatory documents one by one:\n- Aadhaar Card\n- Marriage Certificate\n- Bank Passbook Copy\n- Income Certificate\n- Residential Proof",
+        "fields": ["isAadharUploaded", "isMarriageCertificateUploaded", "isBankPassbookUploaded", "isIncomeCertificateUploaded", "isResidentialProofUploaded"],
+        "confirmation": true
+    },
+    "declaration": {
+        "prompt": "Please confirm the following declaration:\n'I hereby declare that all the information provided is true to the best of my knowledge. Any false information may lead to rejection of my application.'\nType 'YES' to agree and complete the process.",
+        "fields": ["formDeclaration"],
+        "confirmation": true
+    }
+}

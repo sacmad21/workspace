@@ -4,7 +4,8 @@ import os
 import requests
 from azure.functions import HttpRequest, HttpResponse
 import azure.functions as func
-from newCompanyRegApp.main import get_webhook, post_webhook 
+from formFillingBot.main import get_webhook, post_webhook 
+
 
 app = func.FunctionApp( http_auth_level=func.AuthLevel.ANONYMOUS )
 @app.route(route="webhook")

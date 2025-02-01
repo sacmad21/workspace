@@ -1,0 +1,22 @@
+{
+    "isResident_of_Goa": true,
+    "isMarriedWomanInGoa": true,
+    "isIncomeBelow3L": true,
+    "isAlreadyReceivingAssistance": true,
+    "fullName": "Shweta Khaire",
+    "husbandName": "Sachin Khaire",
+    "DOB": "27-10-1995",
+    "aadharNumber": "111122223333",
+    "mobileNumber": "9819436007",
+    "address": "328, Candolim, Calangute district, Goa",
+    "accountHolderName": "Sachin Khaire",
+    "bankName": "Axis bank",
+    "branchName": "Calangute village branch",
+    "accountNumber": "1234123412345",
+    "ifscCode": "INDB0676767",
+    "isAadharUploaded": true,
+    "isMarriageCertificateUploaded": true,
+    "isBankPassbookUploaded": true,
+    "isIncomeCertificateUploaded": false,
+    "isResidentialProofUploaded": false
+}
