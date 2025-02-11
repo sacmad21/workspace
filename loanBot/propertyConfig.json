@@ -1,0 +1,56 @@
+{
+    "society_name": "string",
+    "location": {
+        "city": "string",
+        "state": "string",
+        "pincode": "number",
+        "address": "string"
+    },
+    "open_amenities": {
+        "Garden": {},
+        "Children's Play Area": {},
+        "Jogging Track": {},
+        "Visitors Parking": {}
+    },
+    "club_amenities": {
+        "Swimming Pool": {
+            "length": "number",
+            "width": "number",
+            "max_depth": "number",
+            "open_between": "string",
+            "trainer_available": "boolean"
+        },
+        "Gym": {
+            "area": "number",
+            "equipment": "array",
+            "personal_trainers_available": "boolean",
+            "open_24_7": "boolean"
+        }
+    },
+    "property_variants": [
+        {
+            "config_id": "string",
+            "configuration_name": "string",
+            "bhk": "number",
+            "bathrooms": "number",
+            "balconies": "number",
+            "room_sizes": {
+                "hall": "number",
+                "kitchen": "number",
+                "bedroom1": "number",
+                "bedroom2": "number"
+            },
+            "price": "number",
+            "area_sqft": "number",
+            "loan_eligibility": "number",
+            "facing": "string",
+            "availability": "string",
+            "furnished_status": "string",
+            "property_age": "number",
+            "wings": {
+                "A": "array",
+                "B": "array"
+            }
+        }
+    ]
+}

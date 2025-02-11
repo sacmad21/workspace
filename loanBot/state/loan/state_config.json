@@ -1,0 +1,112 @@
+{
+    "awaiting_eligibility_info": {
+        "Read_Param_From_Document": true,
+        "parameters": {
+            "income": {
+                "required": true,
+                "validation": "is_number",
+                "error_message": "Income must be a valid number."
+            },
+            "employment_type": {
+                "required": true,
+                "validation": "is_employment_type",
+                "error_message": "Employment type must be 'Salaried' or 'Self-Employed'."
+            },
+            "cibil_score": {
+                "required": false,
+                "validation": "is_number",
+                "error_message": "CIBIL Score must be a number."
+            }
+        },
+        "next_state": "awaiting_eligibility_confirmation"
+    },
+    "awaiting_eligibility_confirmation": {
+        "parameters": {},
+        "next_state": "awaiting_next_action"
+    },
+    "awaiting_loan_options": {
+        "Support_QA": "RAG",
+        "RAG": {
+            "collectionName": "LoanQA",
+            "RetrieverDocCount": 3
+        },
+        "next_state": "awaiting_next_action"
+    },
+    "awaiting_loan_options2": {
+        "Support_QA": "MONGO_RAG",
+        "COSMOS_RAG": {
+            "DBName": "LoanDataDB",
+            "CollectionName": "PropertyOptions",
+            "Schema": "propertyConfig.json"
+        },
+        "next_state": "awaiting_next_action"
+    },
+    "upload_documents": {
+        "UploadDocuments": true,
+        "DocumentsConfig": {
+            "AadhaarCard": {
+                "required": true,
+                "allowed_formats": [
+                    "jpg",
+                    "jpeg",
+                    "png",
+                    "pdf"
+                ],
+                "validation_field": "name",
+                "compare_with": "user.name",
+                "summarization": false,
+                "metadata_extraction": true
+            },
+            "PANCard": {
+                "required": true,
+                "allowed_formats": [
+                    "jpg",
+                    "jpeg",
+                    "png",
+                    "pdf"
+                ],
+                "validation_field": "name",
+                "compare_with": "user.name",
+                "summarization": false,
+                "metadata_extraction": true
+            },
+            "Marksheet": {
+                "required": false,
+                "allowed_formats": [
+                    "jpg",
+                    "jpeg",
+                    "png",
+                    "pdf"
+                ],
+                "validation_field": "name",
+                "compare_with": "user.name",
+                "summarization": true,
+                "metadata_extraction": true
+            },
+            "IncomeProof": {
+                "required": false,
+                "allowed_formats": [
+                    "pdf",
+                    "jpg",
+                    "jpeg",
+                    "png"
+                ],
+                "validation_field": "name",
+                "compare_with": "user.name",
+                "summarization": true,
+                "metadata_extraction": true
+            },
+            "PropertyDocuments": {
+                "required": true,
+                "allowed_formats": [
+                    "pdf"
+                ],
+                "validation_field": "property_address",
+                "compare_with": "user.property_address",
+                "summarization": true,
+                "metadata_extraction": true
+            }
+        },
+        "next_state": "awaiting_next_action"
+    }
+}
