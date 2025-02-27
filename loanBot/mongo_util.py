@@ -1,7 +1,7 @@
 from util import send_whatsapp_message
 from state_manager import STATE_CONFIG
-from mongo_util import construct_mongo_query
-from genAI import extract_query_parameters
+from genAI import extract_parameters_from_text
+
 import pymongo
 import json
 import requests
@@ -16,9 +16,21 @@ COSMOS_CONNECTION_STRING = os.getenv("COSMOS_CONNECTION_STRING")
 # Initialize MongoDB Client
 mongo_client = pymongo.MongoClient(COSMOS_CONNECTION_STRING)
 # Load the schema dynamically from `propertyConfig.json`
-with open("propertyConfig.json", "r") as f:
+with open("loanBot/propertyConfig.json", "r") as f:
     PROPERTY_SCHEMA = json.load(f)
 
+
+
+# GenAI API Configuration
+GENAI_API_KEY = os.getenv("GENAI_API_KEY")
+
+GENAI_TEXT_API_URL = os.getenv("GENAI_TEXT_API_URL")
+
+GENAI_VISION_API_URL = os.getenv("GENAI_VISION_API_URL")
+
+QDRANT_URL = os.getenv("QDRANT_URL")
+
+QDRANT_COLLECTION_LOAN = os.getenv("QDRANT_COLLECTION_LOAN")
 
 
 def construct_mongo_query(extracted_params):
@@ -103,8 +115,8 @@ def generate_mongo_query_from_genai(user_query):
     Generate a MongoDB query in JSON format:
     """
 
-    url = "https://api.together.xyz/generate"
-    headers = {"Authorization": f"Bearer {TOGETHER_GENAI_API_KEY}", "Content-Type": "application/json"}
+    url = GENAI_TEXT_API_URL
+    headers = {"Authorization": f"Bearer {GENAI_API_KEY}", "Content-Type": "application/json"}
     data = {"prompt": prompt, "max_tokens": 200}
 
     response = requests.post(url, headers=headers, json=data).json()
@@ -115,6 +127,7 @@ def generate_mongo_query_from_genai(user_query):
     except Exception as e:
         print(f"Error parsing GenAI response: {e}")
         return {}
+
 
 def fetch_documents_from_mongo(db_name, collection_name, query):
     """

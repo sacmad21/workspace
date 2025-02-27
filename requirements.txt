@@ -117,3 +117,15 @@ reportlab
 weasyprint
 xhtml2pdf
 pdfkit
+
+google-auth 
+google-auth-oauthlib 
+google-auth-httplib2 
+google-api-python-client 
+
+pytest
+pytest-mock
+
+pymupdf 
+pdf2image 
+pillow

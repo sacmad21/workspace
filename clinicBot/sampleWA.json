@@ -1,0 +1,24 @@
+{
+    'messaging_product': 'whatsapp', 'to': '917666819468', 'type': 'interactive', 
+    'text': 
+        {'body': 'Welcome! How can I assist you?'}, 
+    'interactive': 
+            {   
+                'type': 'button', 
+                'body': 
+                    {
+                        'text': 'Welcome! How can I assist you?'
+                    }, 
+                    'action': 
+                {
+            'buttons': 
+                    [
+                {'type': 'reply', 'reply': {'id': 'schedule', 'title': 'Schedule Appointment'}},
+                {'type': 'reply', 'reply': {'id': 'cancel', 'title': 'Cancel Appointment'}},
+                {'type': 'reply', 'reply': {'id': 'reschedule', 'title': 'Reschedule Appointment'}},
+                {'type': 'reply', 'reply': {'id': 'list', 'title': 'List My Appointments'}},
+                {'type': 'reply', 'reply': {'id': 'ask_me', 'title': 'Ask Me (Medication Info)'}}
+                    ]
+                }
+            }
+}

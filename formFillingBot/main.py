@@ -8,6 +8,20 @@ from formFillingBot.validation import validate_field, validate_step, validate_fi
 
 from formFillingBot.util import *
 
+
+def check_ladli_behna_eligibility(user_data):
+
+    if user_data["gender"] == "female" and \
+        user_data["age"] >= 18 and \
+        user_data["familyIncomeAnnual"] > 250000 and \
+        user_data["residencyState"].lower() == "madhya pradesh" and \
+        not user_data["incomeTaxPayerInFamily"] and \
+        user_data["govtEmployeeInFamily"] not in ["yes"] and \
+        user_data["pensionAmount"] < 10000:
+        return "Eligible"
+    return "Not Eligible"
+
+
 def extract_fields_with_openai(prompt, user_input, session, step_fields):
     """Use OpenAI to extract fields, generate the next prompt, handle language confirmation, and determine step completion."""
     
@@ -69,6 +83,7 @@ def extract_fields_with_openai(prompt, user_input, session, step_fields):
 
 
 #       client = OpenAI(api_key=openai_api_key)
+
         client = OpenAI(
                 base_url="https://api.groq.com/openai/v1",
                 api_key="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",

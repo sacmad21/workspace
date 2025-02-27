@@ -1,24 +1,21 @@
 import json
 import requests
-from util import send_whatsapp_message, upload_document_to_blob
-from genAI import extract_text_from_document
+from util import *
+from genAI import *
 from state_manager import STATE_CONFIG
-from util import send_whatsapp_message
-from state_manager import STATE_CONFIG
-from mongo_util import construct_mongo_query
-from genAI import extract_query_parameters
+from mongo_util import *
 import pymongo
 import os
+import logging
+
 from dotenv import load_dotenv
-from util import send_whatsapp_message
-from state_manager import STATE_CONFIG
-from genAI import generate_rag_response
 
 
 
 # Load environment variables
 load_dotenv()
 COSMOS_CONNECTION_STRING = os.getenv("COSMOS_CONNECTION_STRING")
+
 
 # Initialize MongoDB Client
 mongo_client = pymongo.MongoClient(COSMOS_CONNECTION_STRING)
@@ -28,6 +25,8 @@ from genAI import extract_parameters_from_text, extract_parameters_from_document
 from state_manager import STATE_CONFIG
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "pdf"}
+
+
 
 def collect_parameters(state_manager, phone_number, user_message=None, document=None):
     """
@@ -41,14 +40,25 @@ def collect_parameters(state_manager, phone_number, user_message=None, document=
 
     # Get required parameters for this state
     required_params = state_config.get("parameters", {})
+    
+    missing_params = state_manager.get_missing_params()
+    
+    print("Required Parameters ::::::::::: ", required_params)
+    print("Required Parameters ::::::::::: ", missing_params)
 
     # Get current user state data
+
+
     user_data = state_manager.get_data()
+
 
     # Step 1: Extract parameters from the text message (if provided)
     if user_message:
-        extracted_from_text = extract_parameters_from_text(user_message, state_name)
+        
+        extracted_from_text = extract_parameters_from_text(  user_message , missing_params  )
         user_data.update(extracted_from_text)
+        print("Extracted Parameters",)     
+
 
     # Step 2: Extract parameters from the uploaded document (if provided & allowed)
     if document:
@@ -69,8 +79,15 @@ def collect_parameters(state_manager, phone_number, user_message=None, document=
             extracted_from_doc = extract_parameters_from_document(document_url, state_name)
             user_data.update(extracted_from_doc)
 
+
     # Step 3: Validate extracted parameters
     valid_params, errors = validate_parameters(user_data, state_name)
+
+
+    logging.info("Parameters:::::::::")
+    logging.info(valid_params)
+    logging.info("Errors :::::::::::")
+    logging.info(errors)
 
     if errors:
         for param, error in errors.items():
@@ -135,9 +152,6 @@ def handle_rag_query(state_manager, phone_number, user_message):
         return True
 
     return True  # Indicate that Q/A processing occurred
-
-
-
 
 
 

@@ -1,7 +1,7 @@
 import azure.functions as func
 import logging
 import os
-from groq import Groq
+#from groq import Groq
 from typing import Dict, List
 
 
@@ -15,7 +15,7 @@ LLAMA3_8B_INSTRUCT = "llama3-8b-8192"
 
 DEFAULT_MODEL = LLAMA3_70B_INSTRUCT
 
-client = Groq()
+#client = Groq()
 
 def assistant(content: str):
     return { "role": "assistant", "content": content }

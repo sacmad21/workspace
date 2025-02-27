@@ -1,83 +1,99 @@
 {
     "awaiting_eligibility_info": {
-        "Read_Param_From_Document": true,
+        "description": "Handles eligibility data collection via text or document upload.",
+        "Collect_Parameters": true,
         "parameters": {
             "income": {
                 "required": true,
-                "validation": "is_number",
-                "error_message": "Income must be a valid number."
+                "validation": {
+                    "regex": "^[0-9]+(\\.[0-9]{1,2})?$",
+                    "error_message": "❌ Income must be a valid number (e.g., 50000 or 50000.50)."
+                }
             },
             "employment_type": {
                 "required": true,
-                "validation": "is_employment_type",
-                "error_message": "Employment type must be 'Salaried' or 'Self-Employed'."
+                "validation": {
+                    "regex": "^(Salaried|Self-Employed)$",
+                    "error_message": "❌ Employment type must be 'Salaried' or 'Self-Employed'."
+                }
             },
-            "cibil_score": {
-                "required": false,
-                "validation": "is_number",
-                "error_message": "CIBIL Score must be a number."
+            "aadhaar": {
+                "required": true,
+                "validation": {
+                    "regex": "^[2-9]{1}[0-9]{11}$",
+                    "error_message": "❌ Aadhaar number must be a 12-digit valid number."
+                }
+            },
+            "pan": {
+                "required": true,
+                "validation": {
+                    "regex": "^[A-Z]{5}[0-9]{4}[A-Z]{1}$",
+                    "error_message": "❌ PAN number must be in format ABCDE1234F."
+                }
             }
         },
-        "next_state": "awaiting_eligibility_confirmation"
+        "logging": {
+            "on_enter": "📢 Entered eligibility info collection state.",
+            "on_exit": "✅ Completed eligibility info collection.",
+            "on_error": "⚠️ Error in eligibility info processing."
+        },
+        "next_state": "awaiting_loan_options"
     },
-    "awaiting_eligibility_confirmation": {
-        "parameters": {},
-        "next_state": "awaiting_next_action"
-    },
+
     "awaiting_loan_options": {
+        "description": "Fetches available loan options based on user criteria.",
         "Support_QA": "RAG",
         "RAG": {
             "collectionName": "LoanQA",
             "RetrieverDocCount": 3
         },
-        "next_state": "awaiting_next_action"
+        "logging": {
+            "on_enter": "📢 Entered loan options retrieval state.",
+            "on_exit": "✅ Loan options retrieved successfully.",
+            "on_error": "⚠️ Error fetching loan options."
+        },
+        "next_state": "awaiting_loan_QA"
     },
-    "awaiting_loan_options2": {
+
+    "awaiting_loan_QA": {
+        "description": "Handles loan-related Q/A using RAG (MongoDB or Qdrant).",
         "Support_QA": "MONGO_RAG",
         "COSMOS_RAG": {
             "DBName": "LoanDataDB",
-            "CollectionName": "PropertyOptions",
+            "CollectionName": "LoanQA",
             "Schema": "propertyConfig.json"
         },
-        "next_state": "awaiting_next_action"
+        "logging": {
+            "on_enter": "📢 Entered loan Q/A state.",
+            "on_exit": "✅ Completed loan Q/A session.",
+            "on_error": "⚠️ Error processing loan Q/A."
+        },
+        "next_state": "upload_documents"
     },
+
     "upload_documents": {
+        "description": "Handles document uploads, validation, metadata extraction, and summarization.",
         "UploadDocuments": true,
         "DocumentsConfig": {
             "AadhaarCard": {
                 "required": true,
-                "allowed_formats": [
-                    "jpg",
-                    "jpeg",
-                    "png",
-                    "pdf"
-                ],
-                "validation_field": "name",
-                "compare_with": "user.name",
+                "allowed_formats": ["jpg", "jpeg", "png", "pdf"],
+                "validation_field": "aadhaar_number",
+                "compare_with": "user.aadhaar_number",
                 "summarization": false,
                 "metadata_extraction": true
             },
             "PANCard": {
                 "required": true,
-                "allowed_formats": [
-                    "jpg",
-                    "jpeg",
-                    "png",
-                    "pdf"
-                ],
-                "validation_field": "name",
-                "compare_with": "user.name",
+                "allowed_formats": ["jpg", "jpeg", "png", "pdf"],
+                "validation_field": "pan_number",
+                "compare_with": "user.pan_number",
                 "summarization": false,
                 "metadata_extraction": true
             },
             "Marksheet": {
                 "required": false,
-                "allowed_formats": [
-                    "jpg",
-                    "jpeg",
-                    "png",
-                    "pdf"
-                ],
+                "allowed_formats": ["jpg", "jpeg", "png", "pdf"],
                 "validation_field": "name",
                 "compare_with": "user.name",
                 "summarization": true,
@@ -85,12 +101,7 @@
             },
             "IncomeProof": {
                 "required": false,
-                "allowed_formats": [
-                    "pdf",
-                    "jpg",
-                    "jpeg",
-                    "png"
-                ],
+                "allowed_formats": ["pdf", "jpg", "jpeg", "png"],
                 "validation_field": "name",
                 "compare_with": "user.name",
                 "summarization": true,
@@ -98,15 +109,37 @@
             },
             "PropertyDocuments": {
                 "required": true,
-                "allowed_formats": [
-                    "pdf"
-                ],
+                "allowed_formats": ["pdf"],
                 "validation_field": "property_address",
                 "compare_with": "user.property_address",
                 "summarization": true,
                 "metadata_extraction": true
             }
         },
+        "logging": {
+            "on_enter": "📢 Entered document upload state.",
+            "on_exit": "✅ All required documents uploaded.",
+            "on_error": "⚠️ Error uploading documents."
+        },
         "next_state": "awaiting_next_action"
+    },
+
+    "awaiting_next_action": {
+        "description": "Final state where the user either proceeds with loan application or exits.",
+        "options": ["Apply for Loan", "Exit"],
+        "logging": {
+            "on_enter": "📢 Entered next action state.",
+            "on_exit": "✅ User has completed all required actions.",
+            "on_error": "⚠️ Error in final state processing."
+        },
+        "next_state": "completed"
+    },
+
+    "completed": {
+        "description": "Marks the process as completed.",
+        "logging": {
+            "on_enter": "🎉 Loan assistance process completed.",
+            "on_exit": "💼 User session closed."
+        }
     }
 }
