@@ -6,9 +6,9 @@ from azure.functions import HttpRequest, HttpResponse
 import azure.functions as func
 
 # from formFillingBot.main import get_webhook, post_webhook 
-# from eligibility.main import get_webhook, post_webhook
+from eligibility.main import get_webhook, post_webhook
 # from expertApp.expertBot import *
-from clinicBot.main import *
+# from clinicBot.main import *
 
 
 app = func.FunctionApp( http_auth_level=func.AuthLevel.ANONYMOUS )

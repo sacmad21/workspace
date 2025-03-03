@@ -31,31 +31,31 @@ def process_schedule(sender, message):
     if user_data.get("step") == 1:
         user_data["doctor"] = message.title()
         user_data["step"] = 2
-        wa_message = f"Got it! Please provide the date you want an appointment with Dr. {user_data['doctor']} (YYYY-MM-DD)."
+        wa_message = f"Got it! Please provide the date you want an appointment with Dr. {user_data['doctor']} (DD-MM-YYYY)."
         send_whatsapp_message(sender, wa_message)
         return wa_message
 
 
     elif user_data.get("step") == 2:
         try:
-            user_data["date"] = datetime.datetime.strptime(message, "%Y-%m-%d").date()
             user_data["step"] = 3
+            user_data["date"] = datetime.datetime.strptime(message, "%d-%m-%Y").date()
 
             # Fetch doctor-specific available time slots            
             available_slots = get_available_time_slots(user_data["doctor"], user_data["date"])
-            recommended_slots = available_slots[:3]
+            recommended_slots = available_slots[:2]
 
             user_data["available_slots"] = available_slots
             user_data["recommended_slots"] = recommended_slots
 
 
             print("Recommended Slots ::", recommended_slots)
-            buttons = [(slot, slot) for slot in recommended_slots] + [("other", "Other (Type Custom Time)")]
-            wa_message = f"Dr. {user_data['doctor']} is available at these times.{buttons} Choose one or type your own time:"
+            buttons = [(slot, slot) for slot in recommended_slots] + [("other", "Other")]
+            wa_message = f"Dr. {user_data['doctor']} is available at these times. Choose one or ask for others"
 #           send_whatsapp_message(sender, wa_message, buttons
             send_whatsapp_message(sender, wa_message,buttons)
         except ValueError:
-            wa_message ="Invalid date format. Please enter in YYYY-MM-DD format."
+            wa_message ="Invalid date format. Please enter in DD-MM-YYYY format."
             send_whatsapp_message(sender, wa_message)
         return wa_message
 
@@ -69,7 +69,7 @@ def process_schedule(sender, message):
 
             available_slots =  [i for i in available_slots if i not in recommended_slots]
             random.shuffle(available_slots)
-            recommended_slots = available_slots[:3]
+            recommended_slots = available_slots[:2]
 
             user_data["available_slots"] = available_slots
             user_data["recommended_slots"] = recommended_slots

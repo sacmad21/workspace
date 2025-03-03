@@ -21,11 +21,13 @@ collection = quadrant_client.get_collection("midjourney")
 # Initialize OpenAI LLM
 openai.api_key = OPENAI_API_KEY
 
+
 def handle_ask_me(sender):
     """
     Starts the Q&A session with the user.
     """
     send_whatsapp_message(sender, "You can ask me anything about medications, side effects, or usage guidelines. Type 'stop' to end the session.")
+
 
 def process_ask_me(sender, message):
     """
@@ -50,9 +52,10 @@ def process_ask_me(sender, message):
     except Exception as e:
         send_whatsapp_message(sender, "Sorry, I couldn't find an answer. Please try rephrasing your question.")
 
+
 def stop_ask_me(sender):
     """
     Ends the Q&A session.
     """
-    send_whatsapp_message(sender, "Q&A session ended. Type 'hi' to return to the main menu.")
-    del user_state[sender]  # Remove from active workflows
+    send_whatsapp_message(sender, "Q&A session ended. Type 'hi' to return to the main menu.")   
+#    del user_state[sender]  # Remove from active workflows

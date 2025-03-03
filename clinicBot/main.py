@@ -7,6 +7,7 @@ import json
 import os
 import traceback
 
+from clinicBot.util.msg_util import get_wa_message_data, get_wa_data
 from clinicBot.util.util import send_whatsapp_message
 from clinicBot.appointment.schedule_appointment import handle_schedule, process_schedule
 from clinicBot.appointment.cancel_appointment import handle_cancel, process_cancel
@@ -24,6 +25,7 @@ user_state = {}
 
 
 
+
 def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
     """
     Handles incoming WhatsApp messages and routes to workflows.
@@ -36,90 +38,86 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
     try:
         data = req.get_json()
         wa_message = ""
-        print("Incomding Data :" , data)
+        logging.info(f"\n\nIncomding Data :" , data)
 
+#        sender, message_text = get_wa_message_data(data)
+        M = get_wa_data(data)
 
-        if "entry" in data:
-            for entry in data["entry"]:
-                for change in entry["changes"]:
-                    if "messages" in change["value"]:
-                        for message in change["value"]["messages"]:
+        sender = M["phone"]
+        message_text = M["text"]        
+        logging.info(f"\n\n-----------------------------WA incoming -------------------------\n")
+        logging.info(M)
 
-                            print("Incomding message :" , message)
+        if message_text :
 
-                            sender = message["from"]
-                            message_text = message.get("text", {}).get("body", "").strip().lower()
+            # Check if user is in an active workflow
+            if (sender in user_state) and ("workflow" in user_state[sender].keys()) :                                
 
-                            print("Sender::", sender)
-                            print("Message::", message_text)
+                current_workflow = user_state[sender]["workflow"]
+                
+                print("Current Workflow::", current_workflow)                               
+                
+                if  current_workflow == "schedule":    
+                    wa_message = process_schedule(sender, message_text)
+                elif current_workflow == "cancel":
+                    wa_message = process_cancel(sender, message_text)
+                elif current_workflow == "reschedule":
+                    wa_message = process_reschedule(sender, message_text)
+                elif current_workflow == "ask_me":
+                    if message_text == "stop":                                        
+                        print("Stop the Q/A")
+                        #stop_ask_me(sender)
+                    else:
+                        print("Continue the Q/A")
+                        #process_ask_me(sender, message_text)
+                
+                if  wa_message.startswith("Done") :                    
+                    del user_state[sender]["workflow"]
+                    
+                return func.HttpResponse(body=json.dumps({"status": "success", "message": wa_message}), mimetype="application/json")
 
-                            # Check if user is in an active workflow
-                            if (sender in user_state) and ("workflow" in user_state[sender].keys()) :                                
-
-                                current_workflow = user_state[sender]["workflow"]
-                                
-                                print("Current Workflow::", current_workflow)                               
-                                
-                                if  current_workflow == "schedule":    
-                                    wa_message = process_schedule(sender, message_text)
-                                elif current_workflow == "cancel":
-                                    wa_message = process_cancel(sender, message_text)
-                                elif current_workflow == "reschedule":
-                                    wa_message = process_reschedule(sender, message_text)
-                                elif current_workflow == "ask_me":
-                                    if message_text == "stop":                                        
-                                        print("Stop the Q/A")
-                                        #stop_ask_me(sender)
-                                    else:
-                                        print("Continue the Q/A")
-                                        #process_ask_me(sender, message_text)
-                                
-                                if  wa_message.startswith("Done") :                    
-                                    del user_state[sender]["workflow"]
-                                    
-                                return func.HttpResponse(body=json.dumps({"status": "success", "message": wa_message}), mimetype="application/json")
-
-                            # Show main menu when user sends "hi" or "hello"
-                            if message_text in ["hi", "hello"]:
-                                buttons = [
-                                    ("schedule", "Schedule Appointment"), 
-                                    ("cancel", "Cancel Appointment"), 
+            # Show main menu when user sends "hi" or "hello"
+            if message_text.lower() in ["hi", "hello"]:
+                buttons = [
+                    ("schedule", "Schedule Appointment"), 
+                    ("cancel", "Cancel Appointment"), 
 #                                    ("reschedule", "Reschedule Appointment"),
-                                    ("list", "List My Appointments"),
-                                    ("ask_me", "Ask Me")  # NEW BUTTON
-                                ]
-                                wa_message = f"Welcome {CLINIC}, We will help you to schedule,reschedule and cancel appointments. What should I do for you ?"
-                                send_whatsapp_message(sender, wa_message,buttons)
+                    ("list", "List My Appointments"),
+#                                   ("ask_me", "Ask Me")  # NEW BUTTON
+                ]
+                wa_message = f"Welcome {CLINIC}, We will help you to schedule,reschedule and cancel appointments. What should I do for you ?"
+                send_whatsapp_message(sender, wa_message,buttons)
 
-                            # Start different workflows and store state
-                            elif message_text.lower().startswith("schedule"):
-                                user_state[sender] = {"workflow": "schedule", "step": 1}
-                                response = handle_schedule(sender)
-                                wa_message =  response 
-                            
-                            elif message_text.lower().startswith("cancel"):
-                                user_state[sender] = {"workflow": "cancel", "step": 1}
-                                response = handle_cancel(sender)
-                                wa_message =  response
-                            
-                            elif message_text.lower().startswith("reschedule"):
-                                user_state[sender] = {"workflow": "reschedule", "step": 1}
-                                response = handle_reschedule(sender)
-                                wa_message =  response
+            # Start different workflows and store state
+            elif message_text.lower().startswith("schedule"):
+                user_state[sender] = {"workflow": "schedule", "step": 1}
+                response = handle_schedule(sender)
+                wa_message =  response 
+            
+            elif message_text.lower().startswith("cancel"):
+                user_state[sender] = {"workflow": "cancel", "step": 1}
+                response = handle_cancel(sender)
+                wa_message =  response
+            
+            elif message_text.lower().startswith("reschedule"):
+                user_state[sender] = {"workflow": "reschedule", "step": 1}
+                response = handle_reschedule(sender)
+                wa_message =  response
 
-                            elif message_text.lower().startswith("list"):
-                                response = handle_list_appointments(sender)
-                                wa_message =  response 
-                            
-                            elif message_text.lower().startswith("ask_me"):  # NEW FEATURE
-                                user_state[sender] = {"workflow": "ask_me", "step": 1}
-                                #response = handle_ask_me(sender)
-                                wa_message =  response 
+            elif message_text.lower().startswith("list"):
+                response = handle_list_appointments(sender)
+                wa_message =  response 
+            
+            elif message_text.lower().startswith("ask_me"):  # NEW FEATURE
+                user_state[sender] = {"workflow": "ask_me", "step": 1}
+                #response = handle_ask_me(sender)
+                wa_message =  response 
 
-                            else:
-                                wa_message = "Please choose an option from the menu. If you want to start conversation again then say Hi."
+            else:
+                wa_message = "Please choose an option from the menu. If you want to start conversation again then say Hi."
 #                               wa_message = "Please choose an option from the menu."
-                                send_whatsapp_message(sender, wa_message)
+                send_whatsapp_message(sender, wa_message)
+
 
         if  wa_message.startswith("Done") :                    
             del user_state[sender]["workflow"]

@@ -6,7 +6,7 @@ def handle_cancel(sender):
     """
     Starts the appointment cancellation workflow.
     """
-    wa_message = "Please provide the date & time of the appointment you want to cancel."
+    wa_message = "Please provide the date (DD-MM-YYYY) of the appointment you want to cancel. "
     send_whatsapp_message(sender, wa_message)
     cancel_requests[sender] = {"step": 1}
     return wa_message 

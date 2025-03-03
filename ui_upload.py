@@ -5,9 +5,10 @@ import os
 
 
 # Define the backend endpoints
-# WHATSAPP_BOT_ENDPOINT = "http://127.0.0.1:7071/api/webhook"
+# BOT_ENDPOINT = "http://127.0.0.1:7071/api/webhook"
 
-WHATSAPP_BOT_ENDPOINT = "https://clinicapp.azurewebsites.net/api/webhook"   
+#BOT_ENDPOINT = "https://clinicapp.azurewebsites.net/api/webhook"   
+BOT_ENDPOINT  = "https://goveligibility.azurewebsites.net/api/webhook"
 
 WHATSAPP_MEDIA_UPLOAD_ENDPOINT = "https://graph.facebook.com/v15.0/441143062411889/media"  # Replace with actual WhatsApp Media API endpoint
 WHATSAPP_TOKEN="Bearer EAARfYvT6wOgBO9qvOuzjTn5khoM2XZBfmQUqRvnMa2W1bXtDBZC8Tz03xTB1MQZABAhGZAllMx4xyIO2McBwu0nVRYQcECLDAHBDjNf2cSAaCTLthKSe2QiRGiCpqaBZBX1X50z660kHXlntsEwN8YJetR2ofGBnpdT7wX6l4OZC6EJmfFjoWsiXgEjbDBZC0xmxyTGpfJzbNlN7pMdCZBeepNMd5ZA4JczAYqwBphZCOQ"
@@ -108,7 +109,7 @@ def send_message(user_input, file=None):
 
     # Send the request to the WhatsApp bot
     
-    response = requests.post(WHATSAPP_BOT_ENDPOINT, headers={"Content-Type": "application/json"}, json=body)
+    response = requests.post(BOT_ENDPOINT, headers={"Content-Type": "application/json"}, json=body)
     
 
 

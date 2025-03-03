@@ -6,14 +6,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from whatsAppTokens import tokens
 
-WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
-PHONE_NUMBER_ID = os.getenv("WHATSAPP_CLOUD_API_PHONE_NUMBER_ID")
+# Load environment variables
+load_dotenv()
+# WhatsApp API Configuration
 
-WHATSAPP_API_URL = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
+wa_vars = tokens["MpEligibilityCheckApp"]
+print("\n\n ----------- Interactive :: ", os.getenv("WHATSAPP_INTERACTIVE_MESSAGE") )
+
+WHATSAPP_API_BASE_URL = os.getenv("WHATSAPP_API_BASE_URL")
+WHATSAPP_CLOUD_API_PHONE_NUMBER_ID = wa_vars["WA_Phone_Number_ID"]
+WHATSAPP_TOKEN = wa_vars["WA_Token"]
+
+
+
+#PHONE_NUMBER_ID = os.getenv("WHATSAPP_CLOUD_API_PHONE_NUMBER_ID")
+#WHATSAPP_API_URL = f"https://graph.facebook.com/v17.0/{PHONE_NUMBER_ID}/messages"
+
+
 
 HEADERS = {
-    "Authorization": WHATSAPP_TOKEN ,
+    "Authorization": f"Bearer {WHATSAPP_TOKEN}",
     "Content-Type": "application/json"
 }
 
@@ -26,6 +40,12 @@ def send_whatsapp_message(phone_number, message):
         "to": phone_number,
         "text": {"body": message}
     }
-    
-    response = requests.post(WHATSAPP_API_URL, headers=HEADERS, json=payload)
+    url = f"{WHATSAPP_API_BASE_URL}/{WHATSAPP_CLOUD_API_PHONE_NUMBER_ID}/messages"
+
+    print("Sending WhatsApp Message ::", payload)
+    response = requests.post(url, headers=HEADERS, json=payload)
+    print("WA Response", response)
+
     return response.json()
+
+

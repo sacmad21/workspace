@@ -1,6 +1,7 @@
 import azure.functions as func
 import json
-from eligibility.whatsapp_api import send_whatsapp_message
+from eligibility.util import send_whatsapp_message
+from eligibility.msg_util import get_wa_data 
 from datetime import datetime
 
 #from eligibility.mukhyamantri_ladli_behna import check_ladli_behna_eligibility
@@ -199,12 +200,25 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
     try:
         print("\nReuest :::", req)
         req_body = req.get_json()
-        print("\nReuest :::", req_body)
+        data = req.get_json()
 
-        message_data = req_body["entry"][0]["changes"][0]["value"]["messages"][0]        
-        phone_number = message_data["from"]
-        message_text = message_data["text"]["body"].strip().lower()
+        print("\nReuest :::", req_body)
         
+#        message_data = req_body["entry"][0]["changes"][0]["value"]["messages"][0]        
+#        phone_number = message_data["from"]
+#        message_text = message_data["text"]["body"].strip().lower()
+
+        M = get_wa_data(data)
+
+        phone_number = M["phone"]
+        message_text = M["text"]        
+        
+        print(f"\n\n-----------------------------WA incoming -------------------------\n")
+        print(M)
+
+
+
+
         print("Stage-1 : Messaged Received ", phone_number, message_text)
 
         if phone_number not in user_data:
@@ -431,7 +445,6 @@ def get_webhook(req: func.HttpRequest) -> func.HttpResponse:
 
     
     WEBHOOK_VERIFY_TOKEN = os.getenv("WEBHOOK_VERIFY_TOKEN")
-
     mode = req.params.get("hub.mode")
     token = req.params.get("hub.verify_token")
     challenge = req.params.get("hub.challenge")
@@ -440,5 +453,6 @@ def get_webhook(req: func.HttpRequest) -> func.HttpResponse:
         print("Webhook verified successfully!")
         return func.HttpResponse(challenge, status_code=200)
     else:
+        print("Webhook not verified ", token, " not equal to" ,WEBHOOK_VERIFY_TOKEN)
         return func.HttpResponse("Forbidden", status_code=403)
 

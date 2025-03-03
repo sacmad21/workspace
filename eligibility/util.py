@@ -14,7 +14,7 @@ from whatsAppTokens import tokens
 # Load environment variables
 load_dotenv()
 # WhatsApp API Configuration
-wa_vars = tokens["ClinicApp"]
+wa_vars = tokens["MpEligibilityCheckApp"]
 print("\n\n ----------- Interactive :: ", os.getenv("WHATSAPP_INTERACTIVE_MESSAGE") )
 
 WHATSAPP_API_BASE_URL = os.getenv("WHATSAPP_API_BASE_URL")
@@ -23,20 +23,17 @@ WHATSAPP_TOKEN = wa_vars["WA_Token"]
 
 
 
-
-
 # Azure Cosmos DB MongoDB API Configuration
 COSMOS_DB_URI = os.getenv("COSMOS_DB_URI")
-
 COSMOS_DB_NAME = "clinic_db"
-
-
 COSMOS_COLLECTION_NAME = "appointements"
+
 
 # Connect to Azure Cosmos DB
 client = MongoClient(COSMOS_DB_URI)
 db = client[COSMOS_DB_NAME]
 appointments_collection = db[COSMOS_COLLECTION_NAME]
+
 
 #Google Calendar API Setup
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
