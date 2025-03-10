@@ -157,11 +157,3 @@ interactivemsg1 = {'object': 'whatsapp_business_account', 'entry': [
     ]
 }
 
-
-
-
-# Extracting data
-extracted_data = get_wa_data(interactivemsg1)
-print(extracted_data)
-
-

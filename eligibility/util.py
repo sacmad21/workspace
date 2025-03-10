@@ -43,8 +43,6 @@ calendar_service = build("calendar", "v3", credentials=CREDS)
 
 
 
-
-
 def send_whatsapp_message(recipient_id, message, buttons=None):
     """
     Sends a WhatsApp message with optional interactive buttons.
@@ -150,6 +148,8 @@ def book_appointment(sender, doctor, final_datetime):
     return "Success"
 
 
-x = datetime.datetime.now()
-msg = book_appointment("919819436007","Dr Mugdha",x )
-print(msg)
+#x = datetime.datetime.now()
+#msg = book_appointment("919819436007","Dr Mugdha",x )
+#print(msg)
+
+

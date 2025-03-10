@@ -170,7 +170,7 @@ def getReadiness(user_data, phone_number, msg) :
     if  session["status"] == "started" :
         
         session["status"] = "ready"
-        wa_message = "Welcome to Eligibiltiy Test for MP goverment schems: Should we proceed ? yes / no "
+        wa_message = "Welcome to Eligibiltiy Test for MP goverment schemes: Should we proceed ? yes / no "
         send_whatsapp_message(phone_number, wa_message)
         return False, func.HttpResponse(body=json.dumps({"status": "success", "message": wa_message}), mimetype="application/json")
 
@@ -216,8 +216,10 @@ def post_webhook(req: func.HttpRequest) -> func.HttpResponse:
         print(f"\n\n-----------------------------WA incoming -------------------------\n")
         print(M)
 
-
-
+        if message_text is None :
+            print(" We have received callback from WhatApps without user mesage")
+            return "No Action"
+        
 
         print("Stage-1 : Messaged Received ", phone_number, message_text)
 
