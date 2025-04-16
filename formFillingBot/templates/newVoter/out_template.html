@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Form 6 - New Voter Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        h2 {
+            text-align: center;
+            text-decoration: underline;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #000;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .photo-box {
+            float: right;
+            width: 120px;
+            height: 150px;
+            border: 1px solid #000;
+            text-align: center;
+            font-size: 12px;
+        }
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+        }
+        .checkbox {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>FORM 6 - APPLICATION FOR INCLUSION OF NAME IN ELECTORAL ROLL</h2>
+<p><em>(Under Rule 13(1) and 26 of the Registration of Electors Rules, 1960)</em></p>
+
+<div class="photo-box">
+    <p>Paste your recent</p>
+    <p>passport size</p>
+    <p>photo here</p>
+</div>
+
+<div class="section">
+    <h3>Personal Details</h3>
+    <div class="field"><span class="label">Name (Local Language):</span> {{ form_data.nameLocalLang }}</div>
+    <div class="field"><span class="label">Name (English):</span> {{ form_data.nameEnglish }}</div>
+    <div class="field"><span class="label">Gender:</span> {{ form_data.gender }}</div>
+    <div class="field"><span class="label">Date of Birth:</span> {{ form_data.dob }}</div>
+</div>
+
+<div class="section">
+    <h3>Relative Details</h3>
+    <div class="field"><span class="label">Relation Type:</span> {{ form_data.relationType }}</div>
+    <div class="field"><span class="label">Relative's Name (Local Language):</span> {{ form_data.relativeNameLocalLang }}</div>
+    <div class="field"><span class="label">Relative's Name (English):</span> {{ form_data.relativeNameEnglish }}</div>
+</div>
+
+<div class="section">
+    <h3>Contact Information</h3>
+    <div class="field"><span class="label">Mobile Number:</span> {{ form_data.mobileNumber }}</div>
+    <div class="field"><span class="label">Email:</span> {{ form_data.email }}</div>
+</div>
+
+<div class="section">
+    <h3>Identification</h3>
+    <div class="field"><span class="label">Do you have Aadhaar?:</span> {{ form_data.hasAadhaar }}</div>
+    <div class="field"><span class="label">Aadhaar Number:</span> {{ form_data.aadhaarNumber }}</div>
+</div>
+
+<div class="section">
+    <h3>Address Details</h3>
+    <div class="field"><span class="label">House No:</span> {{ form_data.houseNumber }}</div>
+    <div class="field"><span class="label">Street/Area:</span> {{ form_data.streetArea }}</div>
+    <div class="field"><span class="label">Town/Village:</span> {{ form_data.townVillage }}</div>
+    <div class="field"><span class="label">Post Office:</span> {{ form_data.postOffice }}</div>
+    <div class="field"><span class="label">PIN Code:</span> {{ form_data.pinCode }}</div>
+    <div class="field"><span class="label">Tehsil/Taluqa:</span> {{ form_data.tehsil }}</div>
+    <div class="field"><span class="label">District:</span> {{ form_data.district }}</div>
+    <div class="field"><span class="label">State/UT:</span> {{ form_data.state }}</div>
+    <div class="field"><span class="label">Residence Since (MM-YYYY):</span> {{ form_data.residenceSince }}</div>
+</div>
+
+<div class="section">
+    <h3>Disability (Optional)</h3>
+    <div class="field"><span class="label">Do you have disability?:</span> {{ form_data.hasDisability }}</div>
+    <div class="field"><span class="label">Type of Disability:</span> {{ form_data.disabilityType }}</div>
+    <div class="field"><span class="label">Percentage:</span> {{ form_data.disabilityPercentage }}%</div>
+</div>
+
+<div class="section">
+    <h3>Family Reference</h3>
+    <div class="field"><span class="label">Name:</span> {{ form_data.familyMemberName }}</div>
+    <div class="field"><span class="label">Relationship:</span> {{ form_data.familyRelationship }}</div>
+    <div class="field"><span class="label">EPIC Number:</span> {{ form_data.familyEpicNumber }}</div>
+</div>
+
+<div class="section">
+    <h3>Declaration</h3>
+    <p>I hereby declare that I am a citizen of India and my place of birth is:</p>
+    <p><span class="label">Village/Town:</span> {{ form_data.placeOfBirth }}</p>
+    <p><span class="label">Is this your first application?:</span> {{ form_data.isFirstTimeVoter }}</p>
+    <p>I declare that the information given is true to the best of my knowledge and understand any false info is punishable under the Representation of the People Act, 1950.</p>
+</div>
+
+<div class="signature">
+    <p>Signature of Applicant / Left Thumb Impression</p>
+    <p>________________________</p>
+</div>
+
+</body>
+</html>

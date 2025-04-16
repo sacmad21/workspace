@@ -7,7 +7,7 @@ form_mandatory_documents = [
 ]
 
 # Workflow Prompts
-form_promts = {
+form_prompts = {
     "welcome": "Welcome, Are you interested to apply for Ladki Bahin Yojana of Maharashtra Goverment ? (Yes/No)",
     "eligibility_check": "Let’s check your eligibility:\n1. Are you a resident of Maharashtra? (Yes/No)\n2. Are you a girl child aged between 18 and 35 years? (Yes/No)\n3. Do you belong to a Below Poverty Line (BPL) family? (Yes/No)\n4. Have you completed education up to Class 10? (Yes/No)\n5. Are you unmarried or divorced? (Yes/No):",
     "basic_details": "Please provide your personal details:\n1. What is your Full Name ?\n2. What is your Father's or Guardian's Name ?\n3. Date of Birth (DD-MM-YYYY) ?\n4. What is your Aadhaar Number ?\n5. What is your Mobile Number ?\n6. What is your Address (House Number/Street, Village/Town, District, PIN Code):",
@@ -65,7 +65,7 @@ form_validation_rules = {
 
     },
     "educational_details": {
-        "fields": ["nameOfInstution","yearOfPassingClass10","marksObtained","isValid1Certificate"],
+        "fields": ["nameOfInstution","yearOfPassingClass10","marksObtained","valid1Certificate"],
         "patterns": {
             "yearOfPassingClass10": r"^\d{4}$",
             "marksOntainedIn10Class": r"^\d{1,3}$"

@@ -38,8 +38,9 @@ def post_webhook(req: HttpRequest) -> HttpResponse:
 #       print("Message body::", message , "\nBusinness Phone Id=", business_phone_number_id, "\tPrompt=", prompt)
 
         # bot_response = answerInSpecific(prompt, "sess001",  "divorce")
-        bot_response = answerInSpecific(prompt,   "sess001",  "mp_finance_faq_csv")
-        # bot_response = answerInSpecific(prompt, "sess001",  "MPdata")
+        # bot_response = answerInSpecific(prompt,   "sess001",  "mp_finance_faq_csv")
+        
+        bot_response = answerInSpecific(prompt, "sess001",  "MPdata")
         
         logging.info("Bot Response::" + bot_response)
 
@@ -63,9 +64,10 @@ def post_webhook(req: HttpRequest) -> HttpResponse:
         #    "message_id": message["id"],
         #}
         #requests.post(url, headers=headers, json=mark_read_data)
-        
+
+
         logging.info("Sending the final response ::: ")
-        return func.HttpResponse( body =json.dumps({"status": "success", "message": bot_response}), mimetype="application/json")
+        return func.HttpResponse( body =json.dumps({"status": "success", "message": bot_response}), mimetype="application/json"), bot_response
 
 
     except requests.RequestException as e:

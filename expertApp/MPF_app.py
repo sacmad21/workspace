@@ -47,13 +47,14 @@ load_dotenv()
 store = {}
 
 # Dev Account
-QDRANT_URL = "http://qdrantrg4nozl67fgkq.centralindia.azurecontainer.io:6333/"
+# QDRANT_URL = "http://qdrantrg4nozl67fgkq.centralindia.azurecontainer.io:6333/"
+
 
 # Prod Account
-# QDRANT_URL = "http://qdrantk3ufmw42nef2i.southeastasia.azurecontainer.io:6333/"
+QDRANT_URL = "http://qdrantk3ufmw42nef2i.southeastasia.azurecontainer.io:6333/"
 
 
-QDRANT_URL = "https://9d76c474-e153-4feb-b5dc-23a6a86271c9.europe-west3-0.gcp.cloud.qdrant.io:6333"
+# QDRANT_URL = "https://9d76c474-e153-4feb-b5dc-23a6a86271c9.europe-west3-0.gcp.cloud.qdrant.io:6333"
 QDRANT_API_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwiZXhwIjoxNzQ2NjA5ODYzfQ.0ZVdq3NkjhI4-ytgwRS7ehCViCOJbY2jpXo6eSYW7Dg"
 
 
@@ -241,13 +242,27 @@ def answerInSpecific(user_input: str, session_id: str, collection: str) -> str:
             )
 
             logging.info("Result", result)
-            references = []
-            context = result["context"]
 
-            return result["answer"]     
-        
-#           return "*Answer*\n" + result["answer"] + "\n*We refered* :\n" + refs
-#           return jsonify( {"content": result["answer"], "references": list(set(references))})
+            references = []
+            refs = "" 
+            context = result["context"]
+            for i in context:
+                filename = i.metadata.get("filename", i.metadata.get("source", ""))
+                if filename and "/" not in filename:
+                    rr = filename.split(".")[0]
+                    if rr not in references :
+                        references.append(rr)                    
+                        refs = refs + "\n" + filename.split(".")[0]
+                else:
+                    rr = filename.split("/")[-1].split(".")[0]
+                    if rr not in references :
+                        references.append(rr)
+                        refs = refs + rr
+
+#            return result["answer"]            
+            return "*Answer*\n" + result["answer"] + "\n\n*We refered* :\n" + refs[1:]
+
+#            return jsonify( {"content": result["answer"], "references": list(set(references))})
 
                
         else:

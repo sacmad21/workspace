@@ -5,14 +5,17 @@ import os
 
 
 # Define the backend endpoints
-# BOT_ENDPOINT = "http://127.0.0.1:7071/api/webhook"
-
+BOT_ENDPOINT = "http://127.0.0.1:7071/api/webhook"
 #BOT_ENDPOINT = "https://clinicapp.azurewebsites.net/api/webhook"   
-BOT_ENDPOINT  = "https://goveligibility.azurewebsites.net/api/webhook"
+#BOT_ENDPOINT  = "https://goveligibility.azurewebsites.net/api/webhook"
+#BOT_ENDPOINT  ="https://mpfinance-app.azurewebsites.net/api/webhook"
 
-WHATSAPP_MEDIA_UPLOAD_ENDPOINT = "https://graph.facebook.com/v15.0/441143062411889/media"  # Replace with actual WhatsApp Media API endpoint
-WHATSAPP_TOKEN="Bearer EAARfYvT6wOgBO9qvOuzjTn5khoM2XZBfmQUqRvnMa2W1bXtDBZC8Tz03xTB1MQZABAhGZAllMx4xyIO2McBwu0nVRYQcECLDAHBDjNf2cSAaCTLthKSe2QiRGiCpqaBZBX1X50z660kHXlntsEwN8YJetR2ofGBnpdT7wX6l4OZC6EJmfFjoWsiXgEjbDBZC0xmxyTGpfJzbNlN7pMdCZBeepNMd5ZA4JczAYqwBphZCOQ"
-WHATAPP_NUM = "917666819468"
+
+WHATSAPP_MEDIA_UPLOAD_ENDPOINT = "https://graph.facebook.com/v15.0/501076069765431/media"  # Replace with actual WhatsApp Media API endpoint
+WHATSAPP_TOKEN="Bearer EAAJiedZADokIBOzoo2MfxAPqQVegDUWisZBzbnrhRMOjfMZBKA1oR6YKtA617f0OXTNaVpELpk0LR5bdwHYpWo4hqM7jic1fCfUmOru0abWywDDYTjIc92KqiWOkdAlZBl9svmy5i6aK16b4CwA67v2K1yfl519K5ceG9EWwaOCZAhuMVVs5qiHqPifxloLWkugZDZD"
+#WHATAPP_NUM = "917666819468"
+WHATAPP_NUM = "917040017471"
+#WHATAPP_NUM = "917219261767"
 
 
 # Chat history

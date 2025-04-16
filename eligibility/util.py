@@ -41,8 +41,6 @@ CREDS = Credentials.from_service_account_file("botplus_secret.json", scopes=SCOP
 calendar_service = build("calendar", "v3", credentials=CREDS)
 
 
-
-
 def send_whatsapp_message(recipient_id, message, buttons=None):
     """
     Sends a WhatsApp message with optional interactive buttons.

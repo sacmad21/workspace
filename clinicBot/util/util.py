@@ -89,7 +89,7 @@ def send_whatsapp_message(recipient_id, message, buttons=None):
     
 
     print("WA URL", url)
-    print("WA Messge::", data)
+    print("WA Messge:::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n", data)
 
     requests.post(url, headers=headers, json=data)
 

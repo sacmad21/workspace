@@ -5,7 +5,6 @@ from openai import OpenAI
 import traceback
 
 from formFillingBot.validation import validate_field, validate_step, validate_final_form
-
 from formFillingBot.util import *
 
 
@@ -20,6 +19,8 @@ def check_ladli_behna_eligibility(user_data):
         user_data["pensionAmount"] < 10000:
         return "Eligible"
     return "Not Eligible"
+
+
 
 
 def extract_fields_with_openai(prompt, user_input, session, step_fields):
@@ -49,6 +50,7 @@ def extract_fields_with_openai(prompt, user_input, session, step_fields):
             f"3. Generate the next question or confirmation prompt in the user's preferred language.\n"
             f"4. Indicate whether the current step is complete.\n\n"
             f"Format your response as JSON only:\n"
+
             f"{{\n"
             f"  \"response\": \"<general_response>\",\n"
             f"  \"fields\": {{<extracted_fields>}},\n"
